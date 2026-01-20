@@ -27,7 +27,7 @@ const unqueWebsites = ref(0);
 //  v3_shop: "Shop",
 //  b_videoPagination: "Classes",
 //};
-console.log(window.asoneModuleTypeName);
+//console.log(window.asoneModuleTypeName);
 let asoneModuleTypeNameObj = window.asoneModuleTypeName;
 
 let asoneModuleTypeName = Object.entries(window.asoneModuleTypeName).sort(
@@ -38,7 +38,7 @@ let asoneModuleTypeName = Object.entries(window.asoneModuleTypeName).sort(
 );
 
 //console.log(asoneModuleTypeName);
-console.log(asoneSummary);
+//console.log(asoneSummary);
 function getMyRating(page_path) {
   //return "";
   //console.log(page_path);
@@ -111,16 +111,20 @@ const selectType = (type) => {
     <pre>{{ missingModuleTypeName }}</pre>
   </div>
   <div v-else>
-    <div class="row">
+    <div class="row" style="font-size: 85%">
       <template
-        class="ps-1"
-        v-for="(value, key) in asoneCommunityModSummary"
+        class="p-1"
+        v-for="key in asoneCommunityModSummary['gpList']"
         :key="key"
       >
-        <div class="col-md-3 col-sm-6 col-12" v-if="Array.isArray(value)">
-          <h6 class="text-center">{{ key }}</h6>
+        <div
+          class="col-12 col-md-3 col-sm-6"
+          v-if="Array.isArray(asoneCommunityModSummary['data'][key])"
+        >
+          <!-- this group has no sub-groups-->
+          <h6 class="text-center w-100 bg-info-subtle p-1">{{ key }}</h6>
           <div class="d-flex flex-wrap">
-            <template v-for="item in value">
+            <template v-for="item in asoneCommunityModSummary['data'][key]">
               <span v-if="item[1] in asoneSummary">
                 <a
                   v-if="item[0] == 'Shop'"
@@ -140,50 +144,54 @@ const selectType = (type) => {
               <span v-else>{{ item[0] }}/0, </span>
             </template>
           </div>
-
-          <!-- <span v-if="value[0] in asoneSummary">
-          <a
-            v-if="value[1] == 'Shop'"
-            class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
-            @click="selectType(value[0])"
-            style="cursor: pointer"
-            >{{ value[1][0] }}/{{ asoneSummary[value[0]].length }} ,</a
-          >
-          <a
-            v-else
-            class="ps-1 text-decoration-underline"
-            @click="selectType(value[0])"
-            style="cursor: pointer"
-            >{{ value[1][0] }}/{{ asoneSummary[value[0]].length }} ,</a
-          >
-        </span>
-        <span v-else>{{ value[1][0] }}/0 ,</span>
-    </span> -->
         </div>
-        <div class="col-md-3 col-sm-6 col-12" v-else>
-          <h6 class="text-center">{{ key }}</h6>
-          <template v-for="(subValue, subKey) in value">
-            <h6 class="text-primary">{{ subKey }}</h6>
-            <template v-for="item in subValue">
-              <span v-if="item[1] in asoneSummary">
-                <a
-                  v-if="item[0] == 'Shop'"
-                  class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
-                  @click="selectType(item[1])"
-                  style="cursor: pointer"
-                  >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
-                >
-                <a
-                  v-else
-                  class="ps-1 text-decoration-underline"
-                  @click="selectType(item[1])"
-                  style="cursor: pointer"
-                  >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
-                >
-              </span>
-              <span v-else>{{ item[0] }}/0 </span>
-            </template>
-          </template>
+        <div
+          class="col-12"
+          :class="{
+            'col-md-3': key !== 'Website',
+            'col-sm-6': key !== 'Website',
+          }"
+          v-else
+        >
+          <!--
+             this group have sub-group
+             for group 'Website', make it full width on mobile and 1/4 width on desktop
+             -->
+          <div class="row">
+            <h6 class="text-center w-100 bg-info-subtle p-1">{{ key }}</h6>
+            <div
+              class="col-12 p-2"
+              :class="{
+                'col-md-3': key === 'Website',
+                'col-sm-6': key === 'Website',
+              }"
+              v-for="(subValue, subKey) in asoneCommunityModSummary['data'][
+                key
+              ]"
+              :key="subKey"
+            >
+              <h6 class="text-primary">{{ subKey }}</h6>
+              <template v-for="item in subValue">
+                <span v-if="item[1] in asoneSummary">
+                  <a
+                    v-if="item[0] == 'Shop'"
+                    class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
+                    @click="selectType(item[1])"
+                    style="cursor: pointer"
+                    >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
+                  >
+                  <a
+                    v-else
+                    class="ps-1 text-decoration-underline"
+                    @click="selectType(item[1])"
+                    style="cursor: pointer"
+                    >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
+                  >
+                </span>
+                <span v-else>{{ item[0] }}/0, </span>
+              </template>
+            </div>
+          </div>
         </div>
       </template>
     </div>
