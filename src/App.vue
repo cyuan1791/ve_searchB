@@ -6,9 +6,12 @@
  4. Then, we use this data to create a search interface.
 
 */
-import { ref, onMounted } from "vue";
+import { ref, onMounted, h } from "vue";
 
 let asoneSummary = JSON.parse(atob(window.asoneSummary));
+let asoneCommunityModSummary = JSON.parse(
+  atob(window.asoneCommunityModSummary),
+);
 let asoneRatingSummary = JSON.parse(atob(window.asoneRatingSummary));
 let asoneLoc = window.asoneLoc;
 //console.log(asoneSummary);
@@ -31,14 +34,14 @@ let asoneModuleTypeName = Object.entries(window.asoneModuleTypeName).sort(
   (a, b) => {
     // Sort by the value (index 1) using localeCompare for strings
     return a[1][0].localeCompare(b[1][0]);
-  }
+  },
 );
 
 //console.log(asoneModuleTypeName);
-//console.log(asoneSummary);
+console.log(asoneSummary);
 function getMyRating(page_path) {
   //return "";
-  console.log(page_path);
+  //console.log(page_path);
   if (page_path in asoneRatingSummary) {
     let numberOfRatings = asoneRatingSummary[page_path][0];
     let totalRatings = asoneRatingSummary[page_path][1];
@@ -108,91 +111,118 @@ const selectType = (type) => {
     <pre>{{ missingModuleTypeName }}</pre>
   </div>
   <div v-else>
-    <!--
-    <div
-      class="d-flex justify-content-center"
-      style="gap: 10px; margin-bottom: 20px"
-    >
-  
-      <div class="p-2 bg-success-subtle rounded">
-        {{ unqueWebsites }} shared websites / {{ websiteInstance }} subjects
-      </div>
-    </div>
-  -->
-    <div
-      class="d-flex justify-content-center"
-      style="gap: 5px; margin-bottom: 20px"
-    >
-      <div class="p-3 bg-info-subtle rounded" style="font-size: 12px">
-        <span
-          class="ps-1"
-          v-for="(value, key) in asoneModuleTypeName"
-          :key="key"
-        >
-          <span v-if="value[0] in asoneSummary">
-            <a
-              v-if="value[1] == 'Shop'"
-              class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
-              @click="selectType(value[0])"
-              style="cursor: pointer"
-              >{{ value[1][0] }}/{{ asoneSummary[value[0]].length }} ,</a
-            >
-            <a
-              v-else
-              class="ps-1 text-decoration-underline"
-              @click="selectType(value[0])"
-              style="cursor: pointer"
-              >{{ value[1][0] }}/{{ asoneSummary[value[0]].length }} ,</a
-            >
-          </span>
-          <span v-else>{{ value[1][0] }}/0 ,</span>
-        </span>
-        <!--
-        <span v-for="(value, key) in asoneSummary" :key="key">
-          <button class="btn btn-primary" @click="selectType(key)">
-            {{ asoneModuleTypeName[key] }} / {{ asoneSummary[key].length }}
-          </button>
-        </span>
-      --></div>
-    </div>
-    <div
-      class="d-flex justify-content-center"
-      style="gap: 10px; margin-bottom: 10px"
-    >
-      <span v-if="asoneType"
-        >Searching in: {{ asoneModuleTypeNameObj[asoneType] }}</span
+    <div class="row">
+      <template
+        class="ps-1"
+        v-for="(value, key) in asoneCommunityModSummary"
+        :key="key"
       >
-      <input v-if="asoneType" v-model="seartchText" placeholder="Search..." />
-    </div>
-    <div
-      class="d-flex flex-column align-items-center"
-      style="gap: 10px; margin-bottom: 10px"
-    >
-      <div v-if="seartchText && asoneType">
-        <div
-          v-for="(item, index) in asoneSummary[asoneType]"
-          :key="index"
-          style="margin-left: 20px"
-        >
-          <div
-            v-if="
-              item[4].toLowerCase().includes(seartchText.toLocaleLowerCase()) ==
-              true
-            "
-          >
-            <a
-              :href="`/default/${asoneLoc}/${item[1]}/#${item[2]}`"
-              target="_blank"
-            >
-              <span
-                v-html="
-                  getMyRating('/default/' + asoneLoc + '/' + item[1] + '/')
-                "
-                style="min-width: 210px; display: inline-block"
-              ></span>
-              {{ item[1] }} - {{ item[4].slice(0, 50) }}
-            </a>
+        <div class="col-md-3 col-sm-6 col-12" v-if="Array.isArray(value)">
+          <h6 class="text-center">{{ key }}</h6>
+          <div class="d-flex flex-wrap">
+            <template v-for="item in value">
+              <span v-if="item[1] in asoneSummary">
+                <a
+                  v-if="item[0] == 'Shop'"
+                  class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
+                  @click="selectType(item[1])"
+                  style="cursor: pointer"
+                  >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
+                >
+                <a
+                  v-else
+                  class="ps-1 text-decoration-underline"
+                  @click="selectType(item[1])"
+                  style="cursor: pointer"
+                  >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
+                >
+              </span>
+              <span v-else>{{ item[0] }}/0, </span>
+            </template>
           </div>
+
+          <!-- <span v-if="value[0] in asoneSummary">
+          <a
+            v-if="value[1] == 'Shop'"
+            class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
+            @click="selectType(value[0])"
+            style="cursor: pointer"
+            >{{ value[1][0] }}/{{ asoneSummary[value[0]].length }} ,</a
+          >
+          <a
+            v-else
+            class="ps-1 text-decoration-underline"
+            @click="selectType(value[0])"
+            style="cursor: pointer"
+            >{{ value[1][0] }}/{{ asoneSummary[value[0]].length }} ,</a
+          >
+        </span>
+        <span v-else>{{ value[1][0] }}/0 ,</span>
+    </span> -->
+        </div>
+        <div class="col-md-3 col-sm-6 col-12" v-else>
+          <h6 class="text-center">{{ key }}</h6>
+          <template v-for="(subValue, subKey) in value">
+            <h6 class="text-primary">{{ subKey }}</h6>
+            <template v-for="item in subValue">
+              <span v-if="item[1] in asoneSummary">
+                <a
+                  v-if="item[0] == 'Shop'"
+                  class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
+                  @click="selectType(item[1])"
+                  style="cursor: pointer"
+                  >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
+                >
+                <a
+                  v-else
+                  class="ps-1 text-decoration-underline"
+                  @click="selectType(item[1])"
+                  style="cursor: pointer"
+                  >{{ item[0] }}/{{ asoneSummary[item[1]].length }} ,</a
+                >
+              </span>
+              <span v-else>{{ item[0] }}/0 </span>
+            </template>
+          </template>
+        </div>
+      </template>
+    </div>
+  </div>
+  <div
+    class="d-flex justify-content-center"
+    style="gap: 10px; margin-bottom: 10px"
+  >
+    <span v-if="asoneType"
+      >Searching in: {{ asoneModuleTypeNameObj[asoneType][0] }}</span
+    >
+    <input v-if="asoneType" v-model="seartchText" placeholder="Search..." />
+  </div>
+  <div
+    class="d-flex flex-column align-items-center"
+    style="gap: 10px; margin-bottom: 10px"
+  >
+    <div v-if="seartchText && asoneType">
+      <div
+        v-for="(item, index) in asoneSummary[asoneType]"
+        :key="index"
+        style="margin-left: 20px"
+      >
+        <div
+          v-if="
+            item[4].toLowerCase().includes(seartchText.toLocaleLowerCase()) ==
+            true
+          "
+        >
+          <a
+            :href="`/default/${asoneLoc}/${item[1]}/#${item[2]}`"
+            target="_blank"
+          >
+            <span
+              v-html="getMyRating('/default/' + asoneLoc + '/' + item[1] + '/')"
+              style="min-width: 210px; display: inline-block"
+            ></span>
+            {{ item[1] }} - {{ item[4].slice(0, 50) }}
+          </a>
         </div>
       </div>
     </div>
