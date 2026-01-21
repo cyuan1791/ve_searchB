@@ -180,7 +180,7 @@ const selectType = (type) => {
             >
               <h6 class="text-primary">{{ subKey }}</h6>
               <template v-for="item in subValue">
-                <span v-if="item[1] in asoneSummary">
+                <span v-if="item[1] in asoneSummary" v-bind:key="item[1]">
                   <a
                     v-if="item[0] == 'Shop'"
                     class="rounded border border-info bg-danger-subtle ps-1 text-decoration-underline"
