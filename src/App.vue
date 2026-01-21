@@ -9,6 +9,8 @@
 import { ref, onMounted, h } from "vue";
 
 let asoneSummary = JSON.parse(atob(window.asoneSummary));
+
+// asoneSummaryModSummary is from communityMod.py:mysum() see v3_searchB.py
 let asoneCommunityModSummary = JSON.parse(
   atob(window.asoneCommunityModSummary),
 );
