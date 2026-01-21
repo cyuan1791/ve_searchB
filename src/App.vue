@@ -104,6 +104,12 @@ onMounted(() => {
 //console.log(asoneModuleTypeName);
 
 const selectType = (type) => {
+  const element = document.getElementById('searchBox');
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth' // Optional: for smooth scrolling animation
+    });
+  }
   asoneType.value = type;
 };
 </script>
@@ -199,6 +205,7 @@ const selectType = (type) => {
     </div>
   </div>
   <div
+    id="searchBox"
     class="d-flex justify-content-center"
     style="gap: 10px; margin-bottom: 10px"
   >
@@ -214,8 +221,8 @@ const selectType = (type) => {
     <div v-if="seartchText && asoneType">
       <div
         v-for="(item, index) in asoneSummary[asoneType]"
-        :key="index"
         style="margin-left: 20px"
+        v-bind:key="index"
       >
         <div
           v-if="
