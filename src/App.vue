@@ -164,6 +164,12 @@ const selectType = (type) => {
           <!--
              this group have sub-group
              for group 'Website', make it full width on mobile and 1/4 width on desktop
+             Looping through asoneCommunityModSummary['data'][key] to get the sub-group
+             The asoneCommunityModSummary['data'][key] is an array of arrays. 
+             To sort the key, we need to sort the asoneCommunityModSummary['data'][key] array.
+             This is done in the python. See communityModSummary.py:mysum() passed to asoneCommunityModSummary[key]
+             The following is the sorted array of keys.
+
              -->
           <div class="row">
             <h6 class="text-center w-100 bg-info-subtle p-1">{{ key }}</h6>
@@ -173,13 +179,11 @@ const selectType = (type) => {
                 'col-md-3': key === 'Website',
                 'col-sm-6': key === 'Website',
               }"
-              v-for="(subValue, subKey) in asoneCommunityModSummary['data'][
-                key
-              ]"
-              :key="subKey"
+              v-for="gKey in asoneCommunityModSummary[key]"
+              :key="gKey"
             >
-              <h6 class="text-primary">{{ subKey }}</h6>
-              <template v-for="item in subValue">
+              <h6 class="text-primary">{{ gKey }}</h6>
+              <template v-for="item in asoneCommunityModSummary['data'][key][gKey]">
                 <span v-if="item[1] in asoneSummary" v-bind:key="item[1]">
                   <a
                     v-if="item[0] == 'Shop'"
